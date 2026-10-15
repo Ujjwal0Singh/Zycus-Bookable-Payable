@@ -1,0 +1,10 @@
+{
+  "file": "DU-08.pdf",
+  "payables": [],
+  "declined": [
+    {
+      "doc_type": "DUNNING_LETTER",
+      "reason": "This document is a dunning letter (Mahnung) reminding of outstanding payments, not an invoice for new goods or services."
+    }
+  ]
+}

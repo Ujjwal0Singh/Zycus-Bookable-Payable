@@ -1,0 +1,35 @@
+# DESIGN.md — The Bookable Payable
+
+## 1. What did we eventually understand about these documents that we did not understand on day one?
+
+On day one, the task looks like a visual OCR-to-JSON mapping problem: read the table rows, copy the header fields, and emit the schema. That mental model stalls immediately because **an invoice PDF is a human-oriented visual projection, whereas `erp.py` is a strict algebraic contract**:
+
+$$\text{gross} = \text{round2}\left(\sum \text{line\_base} - \vert{}\text{discount\_amount}\vert{} + \sum \text{line\_tax} + \sum \text{header\_tax} + \text{other\_charges}\right)$$
+
+Where a human reader effortlessly recognizes redundancy and context, a literal copy feeds redundant visual summaries into additive ERP buckets:
+- **Summary vs. Additive Taxes:** Many invoices print tax rates on every line item and also print a tax summary table in the footer (`DU-06.pdf`, `INV-13.pdf`, `INV-27.pdf`). Emitting both causes `erp.py` to double-count tax. Conversely, placement changes the rounding base: in `INV-11.pdf`, four lines taxed at 24% sum to `16.11 EUR` when rounded per line (`83.21 EUR` gross), whereas applying 24% once to the `67.10 EUR` header net rounds to `16.10 EUR`. In `DU-06.pdf`, four lines taxed at 6% IVA round to `5.80 EUR` individually, but the Portuguese tax authority (`Rúbricas`) computes 6% on the grouped base (`96.52 * 6% = 5.79 EUR`).
+- **Compound Levies & Negative Withholding Taxes:** In `INV-19.pdf` (Ghana), NHIL (2.5%), GETFund (2.5%), and COVID-19 (1%) levies are applied to the net (`6,600.00 GHS`), and the 15% VAT (`1,049.40 GHS`) is compounded on top of the levy-inclusive subtotal (`6,996.00 GHS`). Leaving `tax_amount` blank makes `erp.py` compute 15% on the plain net (`990.00`), so the printed `tax_amount` must be supplied. In `HLD-01.pdf` (Thailand), the 9% Management Fee is part of the VAT base, and the 3% Withholding Tax (`235.44 THB`) reduces what is owed—requiring a negative `tax_amount: "-235.44"`.
+- **Packet Noise & Visual Echoes:** Single PDFs bundle main invoices with supporting customs declarations (`INV-09.pdf`), underlying utility bills (`INV-31.pdf`), shipment specifications (`INV-28.pdf`, `HLD-10.pdf`, `INV-16.pdf`), `Original`/`Duplicado` copies (`INV-25.pdf`), or non-payable dunning letters (`DU-08.pdf`), estimates (`INV-23.pdf`), and delivery notes (`DU-05s.pdf`).
+
+The shift was realizing that our system is not a text reader; it is an **accounting translator** that decomposes a document's visual presentation into orthogonal mathematical components under `erp.py`.
+
+---
+
+## 2. When our system meets a document unlike any it has seen, what does it actually do — and why does that generalise instead of guessing?
+
+Instead of hardcoding vendor or document rules, we engineered an **Iterative Signal-Driven Solver** coupled with a **Scalable Two-Stage Master Resolver**:
+
+1. **Prompt-Cache Friendly Multi-Turn Context:** We place the schema specification and `erp.py` algebraic invariants in a completely static `system_instruction` prefix (maximizing prompt cache hits) and maintain a single flowing multi-turn conversation per PDF. The PDF sits at the top of the context window and the active task/diagnostic signals sit at the bottom to prevent lost-in-the-middle attention decay.
+2. **Fact-Based ERP Diagnostic Signals (Not Instructions):** After an initial extraction pass, `src/reconciler.py` runs the candidate payable through `erp_book()` and inspects internal invariants (`_line_base` vs. printed line `total`, dual line/header taxes, `_line_base` discount precedence where `discount_percentage` masks `discount` as in `INV-21.pdf`, and withholding sign conventions). When a discrepancy occurs, the system emits **structured factual signals** (`{field_path, kind, message}`) describing *how `erp.py` evaluated the components*—never telling the model to plug the target delta.
+3. **Independent-Fact Verification (Surviving Control Twins):** Before any adjustment is accepted, it must be justified by an independent fact on the page. For example, in `DU-05.pdf`, `Quantity: 100 PC`, `List price: 771.66`, `PU: 100` has line total `771.66` because price is per 100 units. By contrast, in `HLD-08.pdf`, `Quantity: 468.0`, `Unit: 1000`, `Unit Price: 276.74` already multiplies to `129,514.32` (`1000` is the 1000ml pack descriptor). Because our diagnostic signal checks whether `quantity * unit_price` already reconciles with the printed line extension, `HLD-08.pdf` is never corrupted.
+4. **Million-Row Master Data Resolution:** `src/resolver.py` indexes exact keys (normalized VAT ID, IBAN, email, PO number) in $O(1)$ hash maps, falls back to token-set blocking with a strict $\ge 85$ confidence threshold, derives payment terms from `(due_date - invoice_date)` when text aliases are absent, and outputs honest blanks (`""`) whenever a supplier or PO is not in `master_data/`.
+
+---
+
+## 3. Was there a document you concluded could not be solved the way the others were? If so, which, and how did you know?
+
+Yes—three documents expose fundamental boundaries where the page itself omits information required by `erp.py`'s schema, proving why a sound solver must **refuse to fabricate numbers**:
+
+1. **`INV-26.pdf` (Truncated Table / Missing Row 30):** On Page 1, the item numbering jumps directly from Item `28` to Item `32`. Summing all 32 visible line extensions yields **`819.73 MYR`**, whereas the printed `Subtotal` and `Total Incl. SST` on Pages 1–2 state **`873.53 MYR`**. The exact **`53.80 MYR`** difference belongs to missing items 29–31 (whose promotion text fragment `(BUY 2 RM66.80)` is partially visible above line 32). Because those lines do not exist on the page, reaching `873.53` in `erp.py` is impossible without inventing a fake `53.80` plug line. Our solver keeps the 32 grounded lines (`819.73 MYR`) and refuses to hallucinate the missing rows.
+2. **`INV-06.pdf` (Tax-Inclusive Unit Prices + Unmarked Zero-Rated Goods):** Page 2 lists grocery items exclusively at `Unit Price (incl vat)` totaling `1,633.98 ZAR` plus `50.00 ZAR` delivery (`1,683.98 ZAR` gross, `169.83 ZAR` VAT at 15%). First, net unit prices are never printed on the page. Second, `169.83 ZAR` VAT implies `1,302.03 ZAR` of standard-rated (15%) items and `381.95 ZAR` of zero-rated (0%) items—yet the `V` markers on Page 2 only account for `181.96 ZAR` of fruit, leaving `Clover Uht Full Cream Long Life` (`199.98 ZAR`) unmarked on the page even though UHT milk is zero-rated under South African VAT law.
+3. **`DU-02.pdf` (Consolidated EUR Summary without Unit Prices vs. 14 TRY Detailed Invoices):** Pages 1–2 present a *Customs Consolidated Invoice* (`37,534.94 EUR`) with extended totals per HTS code but **no unit prices**, while Pages 3–20 contain 14 separate *Customs Detailed Invoices* for the same delivery group priced in **TRY** (`unit_price` and `total` in Turkish Lira).

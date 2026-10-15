@@ -1,0 +1,66 @@
+{
+  "file": "DU-05s.pdf",
+  "payables": [],
+  "declined": [
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "DELIVERY_NOTE",
+      "reason": "Document is a delivery note, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "WAYBILL",
+      "reason": "Document is a waybill/shipping label, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "WAYBILL",
+      "reason": "Document is a waybill/shipping label, not an invoice or credit memo. It does not contain any financial information for payment."
+    },
+    {
+      "doc_type": "SHIPMENT_RECEIPT",
+      "reason": "Document is a shipment receipt and explicitly states 'Charge is estimated' and 'Charge Breakdown: --SGD', indicating it is not a final invoice for payment."
+    }
+  ]
+}

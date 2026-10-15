@@ -1,0 +1,181 @@
+{
+  "file": "HLD-05.pdf",
+  "payables": [
+    {
+      "invoice_number": "856/AT",
+      "invoice_date": "2026-06-12",
+      "due_date": "",
+      "invoice_type": "INVOICE",
+      "currency": "EUR",
+      "supplier": {
+        "name": "Northwind Support Services PT Unipessoal, Lda",
+        "supplier_id": "",
+        "address": "Parnu mnt 224, Portugal",
+        "vat_id": "PT668715865"
+      },
+      "buyer": {
+        "company_code": "",
+        "business_unit_code": "",
+        "location_code": ""
+      },
+      "payment_term_id": "",
+      "po_number": "3800148153",
+      "po_id": "",
+      "gross_total": "1126.27",
+      "subtotal": "835.27",
+      "total_tax_amount": "176.87",
+      "discount_amount": "",
+      "freight_charges": "",
+      "insurance_charges": "",
+      "extra_charges": "25.80",
+      "excise_duties": "88.33",
+      "taxes": [],
+      "line_items": [
+        {
+          "description": "SAGRES Branca Gfa Tab 6x1L PT",
+          "item_type": "GOODS",
+          "uom": "TAB",
+          "quantity": "40",
+          "unit_price": "7.93775",
+          "total": "317.51",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "23",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "HEINEKEN Barril OW 5L PT",
+          "item_type": "GOODS",
+          "uom": "BAR",
+          "quantity": "6",
+          "unit_price": "10.71833",
+          "total": "64.31",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "23",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "SAGRES Branca Gfa Tab 4(6x25cl) PT 201a",
+          "item_type": "GOODS",
+          "uom": "TAB",
+          "quantity": "1",
+          "unit_price": "10.27",
+          "total": "10.27",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "23",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "SAGRES Branca Gfa Cxa 20x25cl PT 201a",
+          "item_type": "GOODS",
+          "uom": "CRT",
+          "quantity": "9",
+          "unit_price": "7.97222",
+          "total": "71.75",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "23",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "CASTELLO Original Gfa SW 4(6x25cl) 404a",
+          "item_type": "GOODS",
+          "uom": "PAK",
+          "quantity": "7",
+          "unit_price": "8.05142",
+          "total": "56.36",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "13",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "LUSO PET SW 6x1,5L SDR",
+          "item_type": "GOODS",
+          "uom": "PAK",
+          "quantity": "27",
+          "unit_price": "2.34444",
+          "total": "63.30",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "13",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "LUSO PET SW 4(6x50cl) SDR",
+          "item_type": "GOODS",
+          "uom": "PAK",
+          "quantity": "4",
+          "unit_price": "8.1925",
+          "total": "32.77",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "13",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "DECVAKUGZK Gfa Cxa 4(6x33cl) ES",
+          "item_type": "GOODS",
+          "uom": "CRT",
+          "quantity": "1",
+          "unit_price": "23.51",
+          "total": "23.51",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "23",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "HEINEKEN Gfa Cxa 18x25cl PT",
+          "item_type": "GOODS",
+          "uom": "CRT",
+          "quantity": "4",
+          "unit_price": "9.1125",
+          "total": "36.45",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "23",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "HEINEKEN Gfa Tab 4(6x25cl) PT",
+          "item_type": "GOODS",
+          "uom": "TAB",
+          "quantity": "7",
+          "unit_price": "12.94857",
+          "total": "90.64",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "23",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "SAGRES Branca Gfa SW 2(10x25cl) PT 201a",
+          "item_type": "GOODS",
+          "uom": "PAK",
+          "quantity": "8",
+          "unit_price": "8.55",
+          "total": "68.40",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "23",
+          "tax_amount": "",
+          "taxes": []
+        }
+      ]
+    }
+  ],
+  "declined": []
+}

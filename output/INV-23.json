@@ -1,0 +1,10 @@
+{
+  "file": "INV-23.pdf",
+  "payables": [],
+  "declined": [
+    {
+      "doc_type": "ESTIMATE",
+      "reason": "Document is an estimate/quote (# EST-259684) with supporting customs duty calculation worksheets, not a valid tax invoice or bookable payable."
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "file": "INV-09.pdf",
+  "payables": [
+    {
+      "invoice_number": "11768395",
+      "invoice_date": "2025-06-06",
+      "due_date": "2025-06-27",
+      "invoice_type": "INVOICE",
+      "currency": "EUR",
+      "supplier": {
+        "name": "Cloverdale Trading",
+        "supplier_id": "",
+        "address": "10112, Gartenweg 13, Harju county ESTONIA",
+        "vat_id": "EE418070965"
+      },
+      "buyer": {
+        "company_code": "BOLTGROUP",
+        "business_unit_code": "EE001",
+        "location_code": "LOC_EE_001"
+      },
+      "payment_term_id": "Net_21",
+      "po_number": "",
+      "po_id": "",
+      "gross_total": "37767.32",
+      "subtotal": "37767.32",
+      "total_tax_amount": "0.00",
+      "discount_amount": "",
+      "freight_charges": "",
+      "insurance_charges": "",
+      "extra_charges": "",
+      "excise_duties": "",
+      "taxes": [
+        {
+          "tax_type": "VAT",
+          "tax_name": "KM",
+          "tax_rate": "0",
+          "tax_amount": "0.00",
+          "tax_type_code": "EST_000_VAT"
+        }
+      ],
+      "line_items": [
+        {
+          "description": "Import duties",
+          "item_type": "TAX",
+          "uom": "",
+          "quantity": "1",
+          "unit_price": "31889.09",
+          "total": "31889.09",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "0",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Customs VAT",
+          "item_type": "TAX",
+          "uom": "",
+          "quantity": "1",
+          "unit_price": "5878.23",
+          "total": "5878.23",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "0",
+          "tax_amount": "",
+          "taxes": []
+        }
+      ]
+    }
+  ],
+  "declined": []
+}

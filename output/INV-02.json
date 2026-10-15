@@ -1,0 +1,150 @@
+{
+  "file": "INV-02.pdf",
+  "payables": [
+    {
+      "invoice_number": "9972-907",
+      "invoice_date": "2026-03-18",
+      "due_date": "2026-04-01",
+      "invoice_type": "INVOICE",
+      "currency": "EUR",
+      "supplier": {
+        "name": "Northwind Technology OÜ",
+        "supplier_id": "",
+        "address": "Market Road 15, Harjumaa, 10134 Tallinn, Estonia",
+        "vat_id": ""
+      },
+      "buyer": {
+        "company_code": "",
+        "business_unit_code": "",
+        "location_code": ""
+      },
+      "payment_term_id": "Net_14",
+      "po_number": "2287",
+      "po_id": "",
+      "gross_total": "608.23",
+      "subtotal": "538.60",
+      "total_tax_amount": "117.72",
+      "discount_amount": "48.09",
+      "freight_charges": "",
+      "insurance_charges": "",
+      "extra_charges": "",
+      "excise_duties": "",
+      "taxes": [
+        {
+          "tax_type": "VAT",
+          "tax_name": "Käibemaks 24%",
+          "tax_rate": "24",
+          "tax_amount": "117.72",
+          "tax_type_code": "EST_240_VAT"
+        }
+      ],
+      "line_items": [
+        {
+          "description": "Led Bar FOS Luminus BAR",
+          "item_type": "GOODS",
+          "uom": "Ea",
+          "quantity": "9",
+          "unit_price": "6.00",
+          "total": "54.00",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Meremiin ADJ Starburst",
+          "item_type": "GOODS",
+          "uom": "Ea",
+          "quantity": "1",
+          "unit_price": "10.00",
+          "total": "10.00",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Pioneer CDJ-3000",
+          "item_type": "GOODS",
+          "uom": "Ea",
+          "quantity": "2",
+          "unit_price": "45.00",
+          "total": "90.00",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Pioneer DJM-900 NXS2 mixer",
+          "item_type": "GOODS",
+          "uom": "Ea",
+          "quantity": "1",
+          "unit_price": "45.00",
+          "total": "45.00",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "DJ laud 2m x 0,5m h=1m",
+          "item_type": "GOODS",
+          "uom": "Ea",
+          "quantity": "1",
+          "unit_price": "18.00",
+          "total": "18.00",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Aktiivkõlar Veritas 8000 komplekt",
+          "item_type": "GOODS",
+          "uom": "Ea",
+          "quantity": "1",
+          "unit_price": "103.60",
+          "total": "103.60",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Linnasisene transport",
+          "item_type": "FREIGHT",
+          "uom": "Ea",
+          "quantity": "1",
+          "unit_price": "50.00",
+          "total": "50.00",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Tehnik",
+          "item_type": "SERVICE",
+          "uom": "Ea",
+          "quantity": "2",
+          "unit_price": "84.00",
+          "total": "168.00",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        }
+      ]
+    }
+  ],
+  "declined": []
+}

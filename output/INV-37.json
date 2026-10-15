@@ -1,0 +1,183 @@
+{
+  "file": "INV-37.pdf",
+  "payables": [
+    {
+      "invoice_number": "5568",
+      "invoice_date": "2018-06-12",
+      "due_date": "",
+      "invoice_type": "INVOICE",
+      "currency": "USD",
+      "supplier": {
+        "name": "1120 VERMONT AVENUE ASSOCIATES, LLP",
+        "supplier_id": "",
+        "address": "",
+        "vat_id": ""
+      },
+      "buyer": {
+        "company_code": "",
+        "business_unit_code": "",
+        "location_code": ""
+      },
+      "payment_term_id": "",
+      "po_number": "17816",
+      "po_id": "",
+      "gross_total": "2487.73",
+      "subtotal": "2375.12",
+      "total_tax_amount": "112.62",
+      "discount_amount": "",
+      "freight_charges": "",
+      "insurance_charges": "",
+      "extra_charges": "",
+      "excise_duties": "",
+      "taxes": [
+        {
+          "tax_type": "Sales Tax",
+          "tax_name": "Sales tax on utility bills",
+          "tax_rate": "5.75",
+          "tax_amount": "105.60",
+          "tax_type_code": ""
+        },
+        {
+          "tax_type": "Sales Tax",
+          "tax_name": "Sales tax on building services",
+          "tax_rate": "5.75",
+          "tax_amount": "7.02",
+          "tax_type_code": ""
+        }
+      ],
+      "line_items": [
+        {
+          "description": "Electric Usage SM #0201 KWH Used",
+          "item_type": "SERVICE",
+          "uom": "KWH",
+          "quantity": "24",
+          "unit_price": "0.097958122",
+          "total": "2.35",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Electric Usage SM #0201 Demand at 2nd fl North Mech Room",
+          "item_type": "SERVICE",
+          "uom": "",
+          "quantity": "1",
+          "unit_price": "11.470001",
+          "total": "11.47",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Electric Usage SM #0202 KWH Used",
+          "item_type": "SERVICE",
+          "uom": "KWH",
+          "quantity": "191",
+          "unit_price": "0.097958122",
+          "total": "18.71",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Electric Usage SM #0202 Demand at 2nd fl North Mech Room",
+          "item_type": "SERVICE",
+          "uom": "",
+          "quantity": "0.7",
+          "unit_price": "11.470001",
+          "total": "8.03",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Electric Usage SM #0206 KWH Used",
+          "item_type": "SERVICE",
+          "uom": "KWH",
+          "quantity": "15816",
+          "unit_price": "0.097958122",
+          "total": "1549.31",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Electric Usage SM #0206 Demand",
+          "item_type": "SERVICE",
+          "uom": "",
+          "quantity": "21.5",
+          "unit_price": "11.470001",
+          "total": "246.61",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Cooling System Condenser Water Usage Unit 2.1 CCH-042 Standby",
+          "item_type": "SERVICE",
+          "uom": "",
+          "quantity": "1",
+          "unit_price": "61.73",
+          "total": "61.73",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Cooling System Condenser Water Usage Unit 2.5 WCMS.1.024 24 Hour",
+          "item_type": "SERVICE",
+          "uom": "",
+          "quantity": "1",
+          "unit_price": "35.27",
+          "total": "35.27",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Cooling System Condenser Water Usage Unit 2.9 CCH-024 24 Hour",
+          "item_type": "SERVICE",
+          "uom": "",
+          "quantity": "1",
+          "unit_price": "319.65",
+          "total": "319.65",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        },
+        {
+          "description": "Building Service Fees",
+          "item_type": "SERVICE",
+          "uom": "",
+          "quantity": "1",
+          "unit_price": "122.00",
+          "total": "122.00",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        }
+      ]
+    }
+  ],
+  "declined": []
+}

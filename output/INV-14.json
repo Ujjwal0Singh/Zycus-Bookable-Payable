@@ -1,0 +1,77 @@
+{
+  "file": "INV-14.pdf",
+  "payables": [
+    {
+      "invoice_number": "INV-1587",
+      "invoice_date": "2026-05-01",
+      "due_date": "2026-05-31",
+      "invoice_type": "INVOICE",
+      "currency": "GBP",
+      "supplier": {
+        "name": "Silverbrook Media Limited",
+        "supplier_id": "",
+        "address": "2nd Floor, Parnu mnt 117, Parnu mnt 26, London, Middlesex, N1 9RY, UNITED KINGDOM",
+        "vat_id": "474927490"
+      },
+      "buyer": {
+        "company_code": "",
+        "business_unit_code": "",
+        "location_code": ""
+      },
+      "payment_term_id": "Net_30",
+      "po_number": "",
+      "po_id": "",
+      "gross_total": "29253.72",
+      "subtotal": "26042.68",
+      "total_tax_amount": "3211.04",
+      "discount_amount": "",
+      "freight_charges": "",
+      "insurance_charges": "",
+      "extra_charges": "",
+      "excise_duties": "",
+      "taxes": [],
+      "line_items": [
+        {
+          "description": "Management Fee for June 2026",
+          "item_type": "SERVICE",
+          "uom": "",
+          "quantity": "1.00",
+          "unit_price": "14620.18",
+          "total": "14620.18",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "20",
+          "tax_amount": "2924.04",
+          "taxes": []
+        },
+        {
+          "description": "Business Rates for June 2026",
+          "item_type": "SERVICE",
+          "uom": "",
+          "quantity": "1.00",
+          "unit_price": "9987.50",
+          "total": "9987.50",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "0",
+          "tax_amount": "0.00",
+          "taxes": []
+        },
+        {
+          "description": "Utilities for June 2026",
+          "item_type": "SERVICE",
+          "uom": "",
+          "quantity": "1.00",
+          "unit_price": "1435.00",
+          "total": "1435.00",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "20",
+          "tax_amount": "287.00",
+          "taxes": []
+        }
+      ]
+    }
+  ],
+  "declined": []
+}

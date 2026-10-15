@@ -1,0 +1,59 @@
+{
+  "file": "HLD-03.pdf",
+  "payables": [
+    {
+      "invoice_number": "",
+      "invoice_date": "2025-12-02",
+      "due_date": "2026-01-01",
+      "invoice_type": "INVOICE",
+      "currency": "EUR",
+      "supplier": {
+        "name": "Northw Blackpine Unipessoal Lda",
+        "supplier_id": "",
+        "address": "Kadaka tee 224, 1250-148 Lisboa",
+        "vat_id": "PT241235054"
+      },
+      "buyer": {
+        "company_code": "",
+        "business_unit_code": "",
+        "location_code": ""
+      },
+      "payment_term_id": "Net_30",
+      "po_number": "",
+      "po_id": "",
+      "gross_total": "67.25",
+      "subtotal": "123.36",
+      "total_tax_amount": "7.74",
+      "discount_amount": "",
+      "freight_charges": "",
+      "insurance_charges": "",
+      "extra_charges": "",
+      "excise_duties": "",
+      "taxes": [
+        {
+          "tax_type": "VAT",
+          "tax_name": "IVA",
+          "tax_rate": "13.00",
+          "tax_amount": "7.74",
+          "tax_type_code": "PT_130_IVA"
+        }
+      ],
+      "line_items": [
+        {
+          "description": "TRINCA ALE T22 6X1500 CXE NTT EAN:5601012004984",
+          "item_type": "GOODS",
+          "uom": "CX",
+          "quantity": "1",
+          "unit_price": "123.36",
+          "total": "123.36",
+          "discount": "63.85",
+          "discount_percentage": "51.76",
+          "tax_rate": "",
+          "tax_amount": "",
+          "taxes": []
+        }
+      ]
+    }
+  ],
+  "declined": []
+}

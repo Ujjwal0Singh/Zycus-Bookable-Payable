@@ -1,0 +1,10 @@
+{
+  "file": "DU-05.pdf",
+  "payables": [],
+  "declined": [
+    {
+      "doc_type": "INVOICE",
+      "reason": "Line item quantity (100) and unit price (771.66) are inconsistent with the stated line total (771.66) and gross total (771.66). Applying the printed quantity and unit price (100 * 771.66 = 77166.00) would result in a gross total of 77166.00, which does not match the document's declared gross total of 771.66. Reconciling this discrepancy would require inventing a quantity, unit price, or discount, which violates the grounding principle."
+    }
+  ]
+}

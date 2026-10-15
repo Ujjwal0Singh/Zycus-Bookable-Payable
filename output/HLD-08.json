@@ -1,0 +1,51 @@
+{
+  "file": "HLD-08.pdf",
+  "payables": [
+    {
+      "invoice_number": "162547",
+      "invoice_date": "2026-05-19",
+      "due_date": "",
+      "invoice_type": "INVOICE",
+      "currency": "ZAR",
+      "supplier": {
+        "name": "Meridian Technologies A Division of Meridian Print LTD",
+        "supplier_id": "",
+        "address": "P.O.Box 13385 Jacobs 4026",
+        "vat_id": "7414745407"
+      },
+      "buyer": {
+        "company_code": "",
+        "business_unit_code": "",
+        "location_code": ""
+      },
+      "payment_term_id": "",
+      "po_number": "",
+      "po_id": "",
+      "gross_total": "148941.47",
+      "subtotal": "129514.32",
+      "total_tax_amount": "19427.15",
+      "discount_amount": "0.00",
+      "freight_charges": "",
+      "insurance_charges": "",
+      "extra_charges": "",
+      "excise_duties": "",
+      "taxes": [],
+      "line_items": [
+        {
+          "description": "Hall's Smooth Fruit Punch 1lt M 337521",
+          "item_type": "GOODS",
+          "uom": "1000",
+          "quantity": "468.0",
+          "unit_price": "276.74",
+          "total": "129514.32",
+          "discount": "",
+          "discount_percentage": "",
+          "tax_rate": "15.00",
+          "tax_amount": "",
+          "taxes": []
+        }
+      ]
+    }
+  ],
+  "declined": []
+}
