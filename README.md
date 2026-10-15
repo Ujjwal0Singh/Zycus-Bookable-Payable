@@ -7,8 +7,6 @@ This repository contains our solution for **The Bookable Payable** engineering c
 1. **Install Python dependencies** (Python 3.10+):
    ```bash
    pip install -r requirements.txt
-```
-### 2. For Running the 
+2. **For Running the** 
 ```bash
 python run.py
-```
