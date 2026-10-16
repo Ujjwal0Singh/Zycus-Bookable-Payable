@@ -1,4 +1,4 @@
-"""src/reconciler.py — Algebraic verification against erp.py and signal-driven solver loop."""
+"""src/reconciler.py — Algebraic verification against erp.py and target-less diagnostic signals."""
 from __future__ import annotations
 
 import copy
@@ -24,25 +24,19 @@ def clean_num_str(val: Any) -> str:
     s = str(val).strip()
     if not s:
         return ""
-    # Stripping currency symbols, spaces, and percent signs
     s = re.sub(r"[€$£¥₹%\s\u00a0]", "", s)
     if not s:
         return ""
-    # Handling trailing minus sign (e.g. "63.85-" -> "-63.85")
     if s.endswith("-") and not s.startswith("-"):
         s = "-" + s[:-1]
-    # Handle European / locale separators:
     if "," in s and "." in s:
         if s.rfind(",") > s.rfind("."):
-            # 1.234,56 -> 1234.56
             s = s.replace(".", "").replace(",", ".")
         else:
-            # 1,234.56 -> 1234.56
             s = s.replace(",", "")
     elif "," in s:
-        # If single comma with 1-6 decimal digits at end, treating as decimal point; else thousands
         parts = s.split(",")
-        if len(parts) == 2 and len(parts[1]) in (1, 2, 3, 4, 5, 6):
+        if len(parts) == 2 and (len(parts[1]) in (1, 2) or parts[0].lstrip("-") == "0"):
             s = parts[0] + "." + parts[1]
         else:
             s = s.replace(",", "")
@@ -66,10 +60,9 @@ def sanitize_payable_schema(p: dict) -> dict:
     for nf in num_fields:
         c = clean_num_str(out.get(nf, ""))
         if is_credit and c.startswith("-"):
-            c = c[1:]  # CREDIT_MEMO using positive magnitudes per schema
+            c = c[1:]
         out[nf] = c
 
-    # Header discounts must have a positive magnitude
     if out.get("discount_amount", "").startswith("-"):
         out["discount_amount"] = out["discount_amount"][1:]
 
@@ -79,7 +72,7 @@ def sanitize_payable_schema(p: dict) -> dict:
             continue
         rate = clean_num_str(t.get("tax_rate", ""))
         amt = clean_num_str(t.get("tax_amount", ""))
-        if is_credit and amt.startswith("-") and "wht" not in str(t.get("tax_type", "")).lower() and "withhold" not in str(t.get("tax_name", "")).lower():
+        if is_credit and amt.startswith("-") and "wht" not in str(t.get("tax_type", "")).lower():
             amt = amt[1:]
         clean_taxes.append({
             "tax_type": str(t.get("tax_type") or "VAT").strip(),
@@ -108,7 +101,6 @@ def sanitize_payable_schema(p: dict) -> dict:
             ltot = ltot.lstrip("-")
             tamt = tamt.lstrip("-")
 
-        # If quantity is missing on a service/fee line where unit_price == total, defaulting quantity to "1"
         if not qty and uprice and ltot and abs(num(uprice) - num(ltot)) <= 0.01 and num(ltot) != 0:
             qty = "1"
         elif not uprice and qty == "1" and ltot:
@@ -152,7 +144,6 @@ def sanitize_payable_schema(p: dict) -> dict:
         })
     out["line_items"] = clean_lines
 
-    # Keeping only schema-defined top-level keys (plus _meta temporarily if present)
     meta = out.get("_meta")
     final_out = {}
     for k in SCHEMA_TOP_KEYS:
@@ -172,12 +163,11 @@ def sanitize_payable_schema(p: dict) -> dict:
 
 
 def generate_diagnostic_signals(payable: dict) -> list[dict[str, str]]:
-    """Inspects a payable through erp.py mechanics and emits factual signals (never 'how-to' plugs)."""
+    """Evaluates a payable via erp.py mechanics and emits target-less factual signals."""
     signals: list[dict[str, str]] = []
     booked = erp_book(payable)["will_book_gross"]
     printed_gross = num(payable.get("gross_total"))
 
-    # 1. Checking line-level arithmetic: does _line_base(li) match printed li['total']?
     sum_line_bases = 0.0
     sum_line_taxes = 0.0
     for idx, li in enumerate(payable.get("line_items") or []):
@@ -188,39 +178,28 @@ def generate_diagnostic_signals(payable: dict) -> list[dict[str, str]]:
         printed_ltot = num(li.get("total"))
 
         if printed_ltot != 0 and abs(base - printed_ltot) > 0.02:
-            # Checking if both discount_percentage and discount are populated, erp.py ignores discount when discount_percentage > 0
             if num(li.get("discount_percentage")) > 0 and num(li.get("discount")) > 0:
                 signals.append({
                     "field_path": f"line_items[{idx}]",
-                    "kind": "ERP_DISCOUNT_PRECEDENCE_FACT",
+                    "kind": "LINE_DISCOUNT_MASKED",
                     "message": (
-                        f"In erp.py, _line_base checks `if disc_pct > 0` first and ignores `discount` on the same line. "
-                        f"Line {idx} has both discount_percentage={li.get('discount_percentage')} and discount={li.get('discount')}, "
-                        f"producing base={base:.2f} vs printed line total={printed_ltot:.2f}."
-                    ),
-                })
-            # Checking if base + ltax == printed_ltot (meaning unit_price or total on page is tax-inclusive)
-            elif abs((base + ltax) - printed_ltot) <= 0.02:
-                signals.append({
-                    "field_path": f"line_items[{idx}].unit_price",
-                    "kind": "TAX_INCLUSIVE_LINE_TOTAL_FACT",
-                    "message": (
-                        f"Line {idx} computed net base is {base:.2f} and line tax is {ltax:.2f} (sum={base+ltax:.2f}), "
-                        f"which equals the printed line total {printed_ltot:.2f}."
+                        f"erp.py _line_base evaluates discount_percentage ({li.get('discount_percentage')}) "
+                        f"and ignores discount ({li.get('discount')}) when both are set on line {idx} "
+                        f"(derived base={base:.2f} vs line total={printed_ltot:.2f})."
                     ),
                 })
             else:
                 signals.append({
                     "field_path": f"line_items[{idx}]",
-                    "kind": "LINE_BASE_MISMATCH_FACT",
+                    "kind": "LINE_EXTENSION_DIVERGENCE",
                     "message": (
-                        f"erp.py computes _line_base = {base:.2f} from quantity={li.get('quantity')}, "
-                        f"unit_price={li.get('unit_price')}, discount={li.get('discount')}, "
-                        f"discount_percentage={li.get('discount_percentage')}, whereas printed line total is {printed_ltot:.2f}."
+                        f"erp.py derived _line_base={base:.2f} (line_tax={ltax:.2f}) from "
+                        f"quantity={li.get('quantity')}, unit_price={li.get('unit_price')}, "
+                        f"discount={li.get('discount')}, discount_percentage={li.get('discount_percentage')}, "
+                        f"which differs from the line's stated total ({printed_ltot:.2f})."
                     ),
                 })
 
-    # 2. Checking simultaneous line-level and header-level taxes (double-counting fact)
     hdr_discount = abs(num(payable.get("discount_amount")))
     net_base = round2(sum_line_bases - hdr_discount)
     hdr_tax = _header_taxes(payable.get("taxes"), net_base)
@@ -228,45 +207,29 @@ def generate_diagnostic_signals(payable: dict) -> list[dict[str, str]]:
     if sum_line_taxes != 0 and hdr_tax != 0:
         signals.append({
             "field_path": "taxes",
-            "kind": "DUAL_TAX_LEVEL_FACT",
+            "kind": "SIMULTANEOUS_LINE_AND_HEADER_TAX",
             "message": (
-                f"erp.py independently adds both line_tax_total ({sum_line_taxes:.2f}) and header_tax ({hdr_tax:.2f}) "
-                f"into the gross (combined tax = {sum_line_taxes + hdr_tax:.2f}), whereas declared total_tax_amount "
-                f"is {payable.get('total_tax_amount') or 'unset'}."
+                f"erp.py sums both line_tax_total ({sum_line_taxes:.2f}) and header_tax ({hdr_tax:.2f}) "
+                f"independently into the gross (combined tax={sum_line_taxes + hdr_tax:.2f})."
             ),
         })
 
-    # 3. Checking withholding tax positive sign fact
-    for idx, t in enumerate(payable.get("taxes") or []):
-        t_name = str(t.get("tax_name") or "").lower()
-        t_type = str(t.get("tax_type") or "").lower()
-        t_amt = num(t.get("tax_amount"))
-        if ("withhold" in t_name or "wht" in t_type or "หัก ณ ที่จ่าย" in t_name) and t_amt >= 0:
-            signals.append({
-                "field_path": f"taxes[{idx}].tax_amount",
-                "kind": "WITHHOLDING_SIGN_FACT",
-                "message": (
-                    f"erp.py adds header_tax to net_base. Tax '{t.get('tax_name')}' has a non-negative "
-                    f"tax_amount={t.get('tax_amount')}, which increases will_book_gross instead of reducing it."
-                ),
-            })
-
-    # 4. Checking overall gross reconciliation delta (stated as an algebraic breakdown fact, never a plug instruction)
-    other_charges = (
-        num(payable.get("freight_charges"))
-        + num(payable.get("insurance_charges"))
-        + num(payable.get("extra_charges"))
-        + num(payable.get("excise_duties"))
-    )
+    # Target-less component summary signal when ERP recompute does not reconcile
     if printed_gross > 0 and abs(booked - printed_gross) > 0.02:
+        delta = round2(booked - printed_gross)
+        other_charges = (
+            num(payable.get("freight_charges"))
+            + num(payable.get("insurance_charges"))
+            + num(payable.get("extra_charges"))
+            + num(payable.get("excise_duties"))
+        )
         signals.append({
-            "field_path": "gross_total",
-            "kind": "ERP_RECOMPUTE_DISCREPANCY_FACT",
+            "field_path": "payable",
+            "kind": "UNRECONCILED_COMPONENT_SUM",
             "message": (
-                f"erp_book(payable) computed will_book_gross = {booked:.2f} "
-                f"(sum_line_bases={sum_line_bases:.2f} - header_discount={hdr_discount:.2f} "
-                f"+ line_tax_total={sum_line_taxes:.2f} + header_tax={hdr_tax:.2f} + other_charges={other_charges:.2f}), "
-                f"whereas the payable's declared gross_total is {printed_gross:.2f}."
+                f"ERP component recompute exhibits a net residual of {delta:+.2f} "
+                f"(derived from sum_line_bases={sum_line_bases:.2f}, header_discount={hdr_discount:.2f}, "
+                f"line_tax_total={sum_line_taxes:.2f}, header_tax={hdr_tax:.2f}, other_charges={other_charges:.2f})."
             ),
         })
 

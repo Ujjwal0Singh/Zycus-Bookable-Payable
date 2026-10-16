@@ -28,7 +28,6 @@ class MasterDataResolver:
         self.payment_terms = self._load_json("payment_terms.json", "payment_terms")
         self.purchase_orders = self._load_json("po_master.json", "purchase_orders")
 
-        # Building O(1) lookup indexes for million-row scalability
         self.sup_by_vat: dict[str, dict] = {}
         self.sup_by_iban: dict[str, dict] = {}
         self.sup_by_email: dict[str, dict] = {}
@@ -55,7 +54,6 @@ class MasterDataResolver:
             if isinstance(days, int) and days not in self.term_by_days:
                 self.term_by_days[days] = pt["payment_term_id"]
 
-        # Flattening buyer business units for fast resolution
         self.buyer_units: list[dict] = []
         for comp in self.companies:
             c_code = comp.get("company_code", "")
@@ -77,22 +75,18 @@ class MasterDataResolver:
             return json.load(fh).get(key, [])
 
     def resolve_supplier(self, raw_supplier: dict, doc_iban: str = "", doc_email: str = "") -> dict:
-        """Resolves supplier_id while preserving raw printed supplier fields."""
+        """Resolves supplier_id using deterministic keys first, then high-threshold name matching."""
         name = str(raw_supplier.get("name") or "").strip()
         vat_id = str(raw_supplier.get("vat_id") or "").strip()
         address = str(raw_supplier.get("address") or "").strip()
 
         matched = None
-        # 1. Checking exact VAT ID match
         if vat_id and _norm_alnum(vat_id) in self.sup_by_vat:
             matched = self.sup_by_vat[_norm_alnum(vat_id)]
-        # 2. Checking exact IBAN match
         if not matched and doc_iban and _norm_alnum(doc_iban) in self.sup_by_iban:
             matched = self.sup_by_iban[_norm_alnum(doc_iban)]
-        # 3. Checking exact Email match
         if not matched and doc_email and doc_email.strip().lower() in self.sup_by_email:
             matched = self.sup_by_email[doc_email.strip().lower()]
-        # 4. Checking exact or High-Confidence Fuzzy Name match (threshold >= 85 to prevent false positives)
         if not matched and name:
             norm_n = _norm_text(name)
             if norm_n in self.sup_by_name:
@@ -110,8 +104,7 @@ class MasterDataResolver:
         }
 
     def resolve_buyer(self, raw_buyer_name: str, raw_buyer_address: str, raw_buyer: dict) -> dict:
-        """Resolves buyer company_code, business_unit_code, and location_code against chart_of_books.json."""
-        # If already validly populated from master, verifying it exists
+        """Resolves buyer codes using weighted legal-name and address similarity (no hardcoded IDs)."""
         existing_bu = str(raw_buyer.get("business_unit_code") or "").strip()
         for u in self.buyer_units:
             if existing_bu and u["business_unit_code"] == existing_bu:
@@ -121,31 +114,25 @@ class MasterDataResolver:
                     "location_code": u["location_code"],
                 }
 
-        combined = _norm_text(f"{raw_buyer_name} {raw_buyer_address}")
-        if not combined:
+        norm_name = _norm_text(raw_buyer_name)
+        norm_addr = _norm_text(raw_buyer_address)
+        if not norm_name and not norm_addr:
             return {"company_code": "", "business_unit_code": "", "location_code": ""}
-
-        # Distinguishing Estonia EE001 (Technology) vs EE004 (Holdings) which share Vana-Louna 15 address
-        if "holdings" in combined and ("tallinn" in combined or "estonia" in combined or "10134" in combined or "ou" in combined):
-            for u in self.buyer_units:
-                if u["business_unit_code"] == "EE004":
-                    return {"company_code": u["company_code"], "business_unit_code": u["business_unit_code"], "location_code": u["location_code"]}
-
-        if ("technology" in combined or "operations" in combined) and ("tallinn" in combined or "estonia" in combined or "10134" in combined):
-            for u in self.buyer_units:
-                if u["business_unit_code"] == "EE001":
-                    return {"company_code": u["company_code"], "business_unit_code": u["business_unit_code"], "location_code": u["location_code"]}
 
         best_unit = None
         best_score = 0.0
         for u in self.buyer_units:
-            target = _norm_text(f"{u['business_unit_name']} {u['invoice_to_address']}")
-            score = fuzz.token_set_ratio(combined, target)
-            if score > best_score:
-                best_score = score
+            u_name = _norm_text(u["business_unit_name"])
+            u_addr = _norm_text(u["invoice_to_address"])
+            name_score = fuzz.token_set_ratio(norm_name, u_name) if norm_name else 0.0
+            addr_score = fuzz.token_set_ratio(norm_addr, u_addr) if norm_addr else 0.0
+            # Weight legal entity name higher than street address so co-located entities disambiguate cleanly
+            combined_score = (0.65 * name_score + 0.35 * addr_score) if (norm_name and norm_addr) else max(name_score, addr_score)
+            if combined_score > best_score:
+                best_score = combined_score
                 best_unit = u
 
-        if best_unit and best_score >= 75:
+        if best_unit and best_score >= 72:
             return {
                 "company_code": best_unit["company_code"],
                 "business_unit_code": best_unit["business_unit_code"],
@@ -154,8 +141,7 @@ class MasterDataResolver:
         return {"company_code": "", "business_unit_code": "", "location_code": ""}
 
     def resolve_payment_term(self, raw_term_text: str, invoice_date: str, due_date: str) -> str:
-        """Resolves payment_term_id from text aliases or (due_date - invoice_date) delta."""
-        # If raw_term_text is already a valid payment_term_id, returning it
+        """Resolves payment_term_id from text aliases or (due_date - invoice_date) day delta."""
         for pt in self.payment_terms:
             if str(raw_term_text).strip() == pt["payment_term_id"]:
                 return pt["payment_term_id"]
@@ -166,14 +152,12 @@ class MasterDataResolver:
                 for alias in pt.get("text_aliases", []):
                     if _norm_text(alias) in norm_t or norm_t in _norm_text(alias):
                         return pt["payment_term_id"]
-            # Checking explicit day number in payment term text (e.g. "30 pv neto", "60 Days Net")
             m = re.search(r"\b(\d+)\s*(?:days?|d|pv|päeva|tage|dias)\b", norm_t)
             if m:
                 d = int(m.group(1))
                 if d in self.term_by_days:
                     return self.term_by_days[d]
 
-        # Deriving from due_date - invoice_date when both ISO dates are present
         if invoice_date and due_date:
             try:
                 d1 = datetime.date.fromisoformat(str(invoice_date).strip()[:10])
@@ -218,15 +202,12 @@ class MasterDataResolver:
         if len(candidates) == 1:
             return candidates[0]["code"]
 
-        # Disambiguating multiple same-rate taxes in the same country (e.g., GH 2.5% NHIL vs GETFL, DE 0% RC)
         for c in candidates:
             master_type = c.get("tax_type", "").upper()
             master_name = c.get("name", "").lower()
             if t_type and t_type == master_type:
                 return c["code"]
             if master_type.lower() in t_name or any(tok in t_name for tok in master_name.split()):
-                return c["code"]
-            if "reverse" in t_name and "reverse" in master_name:
                 return c["code"]
         return candidates[0]["code"]
 
@@ -257,18 +238,14 @@ class MasterDataResolver:
         payable["po_number"] = po_num
         payable["po_id"] = po_id
 
-        # Resolving header taxes
         for t in payable.get("taxes") or []:
             if isinstance(t, dict):
-                code = self.resolve_tax_code(country, t.get("tax_rate"), t.get("tax_type", ""), t.get("tax_name", ""))
-                t["tax_type_code"] = code
+                t["tax_type_code"] = self.resolve_tax_code(country, t.get("tax_rate"), t.get("tax_type", ""), t.get("tax_name", ""))
 
-        # Resolving line taxes
         for li in payable.get("line_items") or []:
             if isinstance(li, dict):
                 for t in li.get("taxes") or []:
                     if isinstance(t, dict):
-                        code = self.resolve_tax_code(country, t.get("tax_rate"), t.get("tax_type", ""), t.get("tax_name", ""))
-                        t["tax_type_code"] = code
+                        t["tax_type_code"] = self.resolve_tax_code(country, t.get("tax_rate"), t.get("tax_type", ""), t.get("tax_name", ""))
 
         return payable
